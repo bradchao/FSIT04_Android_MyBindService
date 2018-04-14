@@ -4,15 +4,20 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
     private MyService myService;
     private boolean isBound = false;
+    private TextView mesg;
+    private MyHandler handler;
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -21,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
             MyService.LocalBinder binder = (MyService.LocalBinder)iBinder;
             myService = binder.getService();
+            myService.setHandler(handler);
             isBound = true;
         }
 
@@ -35,6 +41,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mesg = findViewById(R.id.mesg);
+        handler = new MyHandler();
     }
 
     @Override
@@ -57,11 +66,20 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void test1(View view) {
-
+        myService.doSomething();
     }
 
     public void test2(View view) {
+        myService.showTextView();
+    }
 
+    class MyHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            Log.v("brad", "MainActivity:MyHandler:handlerMessage()");
+            mesg.setText("Lottery: " + msg.arg1);
+        }
     }
 
 }

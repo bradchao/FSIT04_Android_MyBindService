@@ -4,10 +4,12 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import android.os.Message;
 import android.util.Log;
 
 public class MyService extends Service {
     private LocalBinder binder = new LocalBinder();
+    private MainActivity.MyHandler handler;
 
     public MyService() {
         Log.v("brad", "MyService()");
@@ -32,6 +34,16 @@ public class MyService extends Service {
         Log.v("brad", "onCreate");
     }
 
+    public void doSomething(){
+        Log.v("brad", "MyService:doSomething()");
+    }
+
+    public void showTextView(){
+        Message mesg = new Message();
+        mesg.arg1 = (int)(Math.random()*49+1);
+        handler.sendMessage(mesg);
+    }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.v("brad", "onStartCommand");
@@ -42,5 +54,9 @@ public class MyService extends Service {
     public void onDestroy() {
         super.onDestroy();
         Log.v("brad", "onDestroy");
+    }
+
+    void setHandler(MainActivity.MyHandler handler){
+        this.handler = handler;
     }
 }
